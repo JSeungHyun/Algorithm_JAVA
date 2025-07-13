@@ -11,8 +11,10 @@ public class Main {
             result[words.charAt(i) - 'a']++;
         }
 
+        StringBuilder sb = new StringBuilder();
         for (int i : result) {
-            System.out.print(i + " ");
+            sb.append(i).append(" ");
         }
+        System.out.println(sb.toString().trim());
     }
 }
