@@ -3,28 +3,49 @@ import java.util.*;
 class Solution {
     public int solution(int[] priorities, int location) {
         int answer = 0;
-        PriorityQueue<Integer> pq = new PriorityQueue<>(Comparator.reverseOrder());
-        Deque<int[]> dq = new ArrayDeque<>();
+        int index = -1;
+        TreeMap<Integer, List<Integer>> tm = new TreeMap<>(Comparator.reverseOrder());
         
         for (int i=0; i<priorities.length; i++) {
             int priority = priorities[i];
-            pq.add(priority);
-            dq.addLast(new int[]{priority, i});
+            List<Integer> li = tm.get(priority);
+            
+            if (li == null || li.isEmpty()) {
+                li = new ArrayList<>();
+                li.add(i);
+                tm.put(priority, li);
+            } else {
+                li.add(i);
+                tm.put(priority, li);
+            }
         }
         
-        while (!pq.isEmpty()) {
-            int cur = pq.poll();
-            while (true) {
-                int[] arr = dq.pollFirst();
-                if (arr[0] == cur) {
+        for (Integer key : tm.keySet()) {
+            List<Integer> index_list = tm.get(key);
+            if (index_list.size() == 1) { // 단일
+                index = index_list.get(0);
+                answer++;
+                if (index == location) return answer;
+            } else { 
+                List<Integer> left = new ArrayList<>();
+                for (Integer idx : index_list) {
+                    if (index > idx) {
+                        left.add(idx);
+                        continue;
+                    }
+                    index = idx;
                     answer++;
-                    if (arr[1] == location) return answer;
-                    break;
-                } else {
-                    dq.addLast(arr);
+                    if (index == location) return answer;
+                }
+                
+                for (Integer idx : left) {
+                    index = idx;
+                    answer++;
+                    if (index == location) return answer;
                 }
             }
         }
+        
         return answer;
     }
 }
