@@ -52,6 +52,7 @@ class Solution {
         boolean[][] visited = new boolean[height][width];
         Deque<Node> dq = new ArrayDeque<>();
         dq.add(new Node(start[0], start[1], 0));
+        visited[start[0]][start[1]] = true;
         
         while (!dq.isEmpty()) {
             Node node = dq.pollFirst();
