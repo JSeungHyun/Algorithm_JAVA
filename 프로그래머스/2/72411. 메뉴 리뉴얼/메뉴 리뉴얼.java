@@ -1,53 +1,50 @@
 import java.util.*;
-import java.io.*;
 
 class Solution {
+    Map<String, Integer> map;
     public String[] solution(String[] orders, int[] course) {
-        // 1. orders 정렬
-        for (int i=0; i<orders.length; i++) {
-            char[] order = orders[i].toCharArray();
-            Arrays.sort(order);
-            orders[i] = new String(order);
-        }
         List<String> answer = new ArrayList<>();
         
-        // 2. 메뉴 조합 찾기
-        for (int i : course) {
-            Map<String, Integer> map = new HashMap<>();
+        for (int i=0; i<orders.length; i++) {
+            char[] c = orders[i].toCharArray();
+            Arrays.sort(c);
+            orders[i] = new String(c);
+        }
+        
+        for (int c : course) {
+            map = new HashMap<>();
             for (String order : orders) {
-                if (order.length() < i) continue;
-                generateCombinations(order, i, 0, new StringBuilder(), map);
+                if (order.length() < c) continue;
+                dfs(order, new StringBuilder(), c, 0);
             }
             
             if (map.isEmpty()) continue;
+            int max = Collections.max(map.values());
             
-            int max = 0;
-            for (int v : map.values()) {
-                if (v > max) max = v;
-            }
-            if (max < 2) continue;
-            
-            for (Map.Entry<String, Integer> m : map.entrySet()) {
-                if (m.getValue() == max) answer.add(m.getKey());
+            if (max >= 2) {
+                for (String key : map.keySet()) {
+                    if (map.get(key) == max) {
+                        answer.add(key);
+                    }
+                }
             }
         }
-        
-        // 3. 오름차순 정렬 후 형변환 return
         Collections.sort(answer);
         return answer.toArray(new String[0]);
     }
     
-    private void generateCombinations(String order, int r, int start,
-                                  StringBuilder sb, Map<String, Integer> map) {
-        if (sb.length() == r) {
-            String key = sb.toString();
-            map.put(key, map.getOrDefault(key, 0) + 1);
+    public void dfs(String order, StringBuilder sb, int depth, int point) {
+        int before_length = sb.length();
+        if (before_length == depth) {
+            String s = sb.toString();
+            map.put(s, map.getOrDefault(s, 0) + 1);
             return;
         }
-        for (int i = start; i < order.length(); i++) {
+        
+        for (int i=point; i<order.length(); i++) {
             sb.append(order.charAt(i));
-            generateCombinations(order, r, i + 1, sb, map);
-            sb.deleteCharAt(sb.length() - 1);
+            dfs(order, sb, depth, i + 1);
+            sb.setLength(before_length);
         }
     }
 }
