@@ -2,30 +2,31 @@ import java.util.*;
 
 class Solution {
     public int solution(int[] mats, String[][] park) {
-        int h = park.length, w = park[0].length;
-        int[][] dp = new int[h][w];
-        int maxSq = 0;
-
-        for (int y = 0; y < h; y++) {
-            for (int x = 0; x < w; x++) {
-                if ("-1".equals(park[y][x])) {
-                    if (y == 0 || x == 0) {
-                        dp[y][x] = 1;
-                    } else {
-                        dp[y][x] = 1 + Math.min(
-                                dp[y-1][x],
-                                Math.min(dp[y][x-1], dp[y-1][x-1])
-                        );
+        int answer = 0;
+        Arrays.sort(mats);
+        
+        for (int idx=mats.length - 1; idx >= 0; idx--) {
+            int n = mats[idx];
+            
+            for (int y=0; y<=park.length - n; y++) {
+                for (int x=0; x<=park[0].length - n; x++) {
+                    boolean flag = true;
+                    
+                    taken:
+                    for (int dy=y; dy<y+n; dy++) {
+                        for (int dx=x; dx<x+n; dx++) {
+                            if (!park[dy][dx].equals("-1")) {
+                                flag = false;
+                                break taken;
+                            }
+                        }
                     }
-                    maxSq = Math.max(maxSq, dp[y][x]);
+                    
+                    if (flag) return n;
                 }
             }
         }
-
-        Arrays.sort(mats);
-        for (int i = mats.length - 1; i >= 0; i--) {
-            if (mats[i] <= maxSq) return mats[i];
-        }
+        
         return -1;
     }
 }
